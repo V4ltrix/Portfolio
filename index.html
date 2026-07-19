@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Демо: блюпрінт-фон</title>
+  <link rel="icon" href="/icons/PortLogo.png" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ФОНОВИЙ ЕФЕКТ (завжди на задньому плані) -->
+  <div class="fx">
+    <div class="fx-grid-base"></div>
+    <div class="fx-grid-bright"></div>
+    <canvas class="fx-particles"></canvas>
+    <div class="fx-glow"></div>
+    <div class="fx-blobs">
+      <div class="blob blob--1"></div>
+      <div class="blob blob--2"></div>
+      <div class="blob blob--3"></div>
+      <div class="blob blob--4"></div>
+    </div>
+  </div>
+
+  <!-- ТВІЙ КОНТЕНТ САЙТУ -->
+  <main class="main">
+    <div class="container">
+        <section class="container_404">
+          <!-- Додав кнопці непрозорий фон (#050506), щоб світло не просвічувалось -->
+          <h1 class="title-404" style="background: #050506;">
+            <span class="shimmer-text">Error 404 <br> Page not found</span>
+          </h1>
+          <!-- Тестова кнопка, щоб ти побачив, як курсор реагує на наведення.
+               Заміниш чи видалиш, коли з'являться реальні кнопки сайту. -->
+          <button type="button" class="test-btn">larp</button>
+        </section>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
