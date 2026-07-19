@@ -13,38 +13,34 @@
   --grid-line-width: 0.6px;       
 
   /* --- Підсвітка САМОЇ СІТКИ навколо курсора (лінії стають яскравішими) --- */
-  --cursor-grid-radius: 80px;    /* радіус дії підсвітки навколо курсора, px */
-  --cursor-grid-opacity: 0.3;     /* яскравість ліній сітки в центрі підсвітки (0–1) */
-  --cursor-grid-blur: 1px;        /* розмиття САМИХ ліній у зоні підсвітки; 0-2px = чіткі лінії, більше = розмита пляма замість сітки */
-  --cursor-grid-inner: 1%;       /* % радіусу з максимальною яскравістю (без згасання) */
-  --cursor-grid-outer: 100%;      /* % радіусу, де підсвітка повністю згасає до нуля */
+  --cursor-grid-radius: 80px;    
+  --cursor-grid-opacity: 0.3;     
+  --cursor-grid-blur: 1px;        
+  --cursor-grid-inner: 1%;       
+  --cursor-grid-outer: 100%;      
 
   /* --- М'який ореол (світлова пляма) навколо курсора, ОКРЕМО від сітки --- */
-  --cursor-glow-radius: 100px;    /* радіус ореолу, px */
-  --cursor-glow-opacity: 0.06;    /* інтенсивність ореолу (0–1) */
+  --cursor-glow-radius: 100px;    
+  --cursor-glow-opacity: 0.06;    
 
-  --cursor-ease: 0.08;            /* плавність слідування підсвітки за мишею: 0.02 — повільно, 0.3 — різко */
-
-  /* --- Плями (Blobs) --- */
-  --blob-color: 255, 255, 255;    
-  --blob-opacity: 0.15;            
-  --blob-blur: 170px;            
-  --blob-speed: 3;                
+  --cursor-ease: 0.08;            
 
   /* --- Сайтовий контейнер --- */
   --container-max: 1440px;        
   --container-pad: 10px;          
 
   /* --- Частинки (Particles) --- */
-  --particle-count: 500;              
+  --particle-idle-timeout: 100;   
+  --particle-idle-fade: 10;     
+  --particle-count: 300;              
   --particle-size-min: 2px;          
-  --particle-size-max: 7px;          
+  --particle-size-max: 5px;          
   --particle-color: 255, 255, 255;   
   --particle-opacity: 0.4;          
-  --particle-speed: 0.25;            
+  --particle-speed: 0.1;            
   --particle-rotation-speed: 0.02;   
   --particle-avoid-radius: 90px;    
-  --particle-avoid-force: 6;         
+  --particle-avoid-force: 10;         
   --particle-glow-color: 255, 255, 255; 
   --particle-glow-opacity: 0.9;      
 }
@@ -131,8 +127,7 @@ a {
   pointer-events: none;
 }
 
-/* Тестова кнопка — лишив як є, більше не потрібна для курсора,
-   але спокійно можеш лишити чи замінити на реальну. */
+/* Тестова кнопка */
 .test-btn {
   backdrop-filter: blur(3px);
   margin-top: 28px;
@@ -146,7 +141,7 @@ a {
 }
 
 /* ==========================================================================
-   4. ФОНОВІ ЕФЕКТИ (.fx, СІТКА, ЧАСТИНКИ, ПЛЯМИ)
+   4. ФОНОВІ ЕФЕКТИ (.fx, СІТКА, ЧАСТИНКИ)
    ========================================================================== */
 
 .fx {
@@ -201,56 +196,4 @@ a {
   position: absolute;
   inset: 0;
   background: radial-gradient(circle var(--cursor-glow-radius) at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, var(--cursor-glow-opacity)) 0%, rgba(255, 255, 255, calc(var(--cursor-glow-opacity) * 0.4)) 45%, transparent 75%);
-}
-
-.fx-blobs {
-  position: absolute;
-  inset: 0;
-  filter: blur(var(--blob-blur));
-}
-
-.blob {
-  position: absolute;
-  width: 42vmax;
-  height: 42vmax;
-  background: radial-gradient(circle, rgba(var(--blob-color), var(--blob-opacity)) 0%, rgba(var(--blob-color), 0) 72%);
-  mix-blend-mode: screen;
-  will-change: transform, border-radius;
-}
-
-.blob--1 { top: 10%;  left: -12%;  animation: float-1 calc(40s / var(--blob-speed)) ease-in-out infinite; } 
-.blob--2 { top: -10%; right: -8%;  animation: float-2 calc(46s / var(--blob-speed)) ease-in-out infinite; }
-.blob--3 { bottom: -10%; left: 8%; animation: float-3 calc(43s / var(--blob-speed)) ease-in-out infinite; }
-.blob--4 { top: 20%; right: -14%; animation: float-4 calc(37s / var(--blob-speed)) ease-in-out infinite; }
-
-/* ==========================================================================
-   6. АНІМАЦІЇ (@keyframes)
-   ========================================================================== */
-
-@keyframes float-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); border-radius: 50%; }
-  20%      { transform: translate(14vw, 8vh) scale(1.1); border-radius: 45% 55% 60% 40%; }
-  45%      { transform: translate(22vw, 22vh) scale(0.92); border-radius: 55% 45% 40% 60%; }
-  70%      { transform: translate(10vw, 30vh) scale(1.05); border-radius: 60% 40% 50% 50%; }
-}
-
-@keyframes float-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); border-radius: 50%; }
-  25%      { transform: translate(-16vw, 12vh) scale(0.9); border-radius: 55% 45% 50% 50%; }
-  50%      { transform: translate(-24vw, 26vh) scale(1.12); border-radius: 40% 60% 55% 45%; }
-  75%      { transform: translate(-10vw, 16vh) scale(0.95); border-radius: 60% 40% 45% 55%; }
-}
-
-@keyframes float-3 {
-  0%, 100% { transform: translate(0, 0) scale(1); border-radius: 50%; }
-  30%      { transform: translate(12vw, -14vh) scale(1.08); border-radius: 45% 55% 40% 60%; }
-  55%      { transform: translate(24vw, -24vh) scale(0.9); border-radius: 60% 40% 55% 45%; }
-  80%      { transform: translate(14vw, -10vh) scale(1.05); border-radius: 50% 50% 60% 40%; }
-}
-
-@keyframes float-4 {
-  0%, 100% { transform: translate(0, 0) scale(1); border-radius: 50%; }
-  22%      { transform: translate(-14vw, -12vh) scale(0.92); border-radius: 55% 45% 60% 40%; }
-  48%      { transform: translate(-22vw, -22vh) scale(1.1); border-radius: 40% 60% 45% 55%; }
-  74%      { transform: translate(-10vw, -8vh) scale(0.95); border-radius: 60% 40% 50% 50%; }
 }
