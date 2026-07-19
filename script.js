@@ -47,7 +47,11 @@
 
 /* ==========================================================
    ЧАСТИНКИ (Квадратики)
-   Залишено без змін, адже вони працюють ідеально
+
+   Додано: якщо миша не рухається довше --particle-idle-timeout —
+   поле відштовхування плавно "вимикається" (сила спадає до нуля
+   за --particle-idle-fade), і частинки просто пролітають повз,
+   ігноруючи курсор, поки він знову не поворухнеться.
    ========================================================== */
 (function () {
   function init() {
@@ -80,11 +84,18 @@
     const glowColor = readColorVar('--particle-glow-color', '255, 255, 255');
     const glowOpacity = readVar('--particle-glow-opacity', 0.9);
 
-    const maxSpeed = speed * 4;  
-    const friction = 0.96;       
+    // Скільки мс миша має простояти нерухомо, щоб поле почало вимикатись
+    const idleTimeout = readVar('--particle-idle-timeout', 800);
+    // За скільки мс сила відштовхування плавно спадає до нуля після idleTimeout
+    const idleFade = readVar('--particle-idle-fade', 1200);
+
+    const maxSpeed = speed * 4;
+    const friction = 0.96;
 
     let w, h, dpr;
     let mouseX = -9999, mouseY = -9999;
+    let lastMouseX = -9999, lastMouseY = -9999;
+    let lastMoveTime = performance.now();
 
     function resize() {
       dpr = window.devicePixelRatio || 1;
@@ -116,10 +127,32 @@
       for (let i = 0; i < count; i++) particles.push(makeParticle());
     }
 
-    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
     window.addEventListener('resize', () => { resize(); initParticles(); });
 
     function loop() {
+      const now = performance.now();
+
+      // Рахуємо, чи миша реально зрушила з місця відносно попереднього кадру
+      if (mouseX !== lastMouseX || mouseY !== lastMouseY) {
+        lastMoveTime = now;
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+      }
+
+      const idleFor = now - lastMoveTime;
+
+      // fieldStrength: 1 — поле повністю активне, 0 — повністю вимкнене (частинки ігнорують курсор)
+      let fieldStrength = 1;
+      if (idleFor > idleTimeout) {
+        const fadeProgress = (idleFor - idleTimeout) / idleFade;
+        fieldStrength = Math.max(0, 1 - fadeProgress);
+      }
+
       ctx.clearRect(0, 0, w, h);
       for (const p of particles) {
         const dx = p.x - mouseX;
@@ -129,17 +162,20 @@
         let drawColor = baseColor;
         let drawOpacity = p.opacity;
 
-        if (dist < avoidRadius && dist > 0.01) {
-          const t = 1 - dist / avoidRadius; 
+        if (dist < avoidRadius && dist > 0.01 && fieldStrength > 0) {
+          const t = (1 - dist / avoidRadius) * fieldStrength;
           const force = t * speed * avoidForce;
           p.vx += (dx / dist) * force;
           p.vy += (dy / dist) * force;
+
           drawColor = glowColor;
           drawOpacity = p.opacity + (glowOpacity - p.opacity) * t;
-        } else {
-          p.vx += (p.baseVx - p.vx) * 0.02;
-          p.vy += (p.baseVy - p.vy) * 0.02;
         }
+
+        // Повернення до "рідного" дрейфу — сильніше, коли поле вимкнене/затухає
+        const returnRate = 0.02 + (1 - fieldStrength) * 0.03;
+        p.vx += (p.baseVx - p.vx) * returnRate;
+        p.vy += (p.baseVy - p.vy) * returnRate;
 
         const currentSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         if (currentSpeed > maxSpeed) { p.vx = (p.vx / currentSpeed) * maxSpeed; p.vy = (p.vy / currentSpeed) * maxSpeed; }
